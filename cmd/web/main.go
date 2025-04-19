@@ -1,19 +1,20 @@
 package main
 
 import (
+	"database/sql"
 	"flag"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
-	"database/sql"
-	
-	_"github.com/lib/pq"
+	_ "github.com/lib/pq"
+	"snippetbox.jerkeyray.com/internal/models"
 )
 
 type application struct {
 	errorLog *log.Logger
 	infoLog  *log.Logger
+	snippets *models.SnippetModel
 }
 
 func main() {
@@ -34,6 +35,7 @@ func main() {
 	app := &application {
 		errorLog: errorLog,
 		infoLog: infoLog,
+		snippets: &models.SnippetModel{DB: db},
 	}
 
 	mux := http.NewServeMux()
@@ -52,7 +54,7 @@ func main() {
 	}
 
 	infoLog.Printf("Starting server on %s", *addr)
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	errorLog.Fatal(err)
 }
 
